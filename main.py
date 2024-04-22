@@ -1,3 +1,5 @@
+import sys
+
 import pygame
 #from board_class import Board
 
@@ -57,27 +59,57 @@ def menu_screen(surface):
     exit_text = default_font.render("EXIT", 0, "black")
     surface.blit(exit_text, (267, 488))
 
+def main():
+    # setup for pygame and screen
+    pygame.init()
+    screen = pygame.display.set_mode((600, 600))
+    pygame.display.set_caption("Sudoku")
 
-
-
-#setup for pygame and screen
-pygame.init()
-screen = pygame.display.set_mode((600, 600))
-pygame.display.set_caption("Sudoku")
-running = True
-
-#main game loop
-while running:
-    #checks for exit
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-    #sets the background
+    # sets the background
     screen.fill("white")
     screen.blit(pygame.image.load("background.webp"), [0, 0])
 
+    # menu buttons + title
     menu_screen(screen)
+    menu = True
+    board = False
+    running = True
 
-    # flip() the display to put your work on screen
-    pygame.display.flip()
+    # main game loop
+    while running:
+        #checks for exit
+        for event in pygame.event.get():
+            #shuts program down if user exits the game
+            if event.type == pygame.QUIT:
+                running = False
+                pygame.quit()
+                sys.exit()
+            #checks for click on menu, game, and win/lose screen respectively
+            if event.type == pygame.MOUSEBUTTONDOWN and running:
+                if menu:
+                    x, y = event.pos
+                    if 375 <= y <= 425:
+                        if 50 <= x <= 190:
+                            menu = False
+                            board = True
+                        elif 230 <= x <= 370:
+                            menu = False
+                            board = True
+                        elif 410 <= x <= 550:
+                            menu = False
+                            board = True
+                    if 475 <= y <= 525 and 230 <= x <= 370:
+                        pygame.quit()
+                        sys.exit()
+
+                elif board:
+                    print()
+                else:
+                    print()
+
+
+        #updates screen
+        pygame.display.flip()
+
+if __name__ == "__main__":
+    main()
