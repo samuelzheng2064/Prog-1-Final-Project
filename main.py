@@ -1,7 +1,34 @@
 import pygame
 #from board_class import Board
 
-def menu_buttons(surface):
+def menu_screen(surface):
+
+    #font for buttons
+    default_font = pygame.font.Font(None, 40)
+
+    #TITLE
+    ###############################################################################################
+    #title text
+    title_font = pygame.font.Font("minecraft-font/MinecraftRegular-Bmg3.otf", 120)
+    title_text = title_font.render("Sudoku", 0, "black")
+
+    #title background
+    title_background = pygame.Rect.copy(title_text.get_rect())
+    title_background.width = 460
+    title_background.center = (300, 100)
+
+    #draws title
+    pygame.draw.rect(surface, "white", title_background)
+    pygame.draw.rect(surface, "black", title_background, 3)
+    surface.blit(title_text, (97, 50))
+
+    #INSTRUCTIONS
+    ###############################################################################################
+    instruction_text = default_font.render("Choose Your Difficulty:", 0, "black")
+    surface.blit(instruction_text, (143, 340))
+
+    #BUTTONS
+    ###############################################################################################
     #menu buttons' position and size
     easy_button = pygame.Rect(50, 400, 140, 50)
     medium_button = pygame.Rect.copy(easy_button)
@@ -17,8 +44,7 @@ def menu_buttons(surface):
         pygame.draw.rect(surface, "white", button, 0, int(button.height / 2))
         pygame.draw.rect(surface, "black", button, 1, int(button.height / 2))
 
-    default_font = pygame.font.Font(None, 40)
-
+    #shows text on each button
     easy_text = default_font.render("EASY", 0, "black")
     surface.blit(easy_text, (83, 413))
 
@@ -30,6 +56,7 @@ def menu_buttons(surface):
 
     exit_text = default_font.render("EXIT", 0, "black")
     surface.blit(exit_text, (267, 488))
+
 
 
 
@@ -50,13 +77,7 @@ while running:
     screen.fill("white")
     screen.blit(pygame.image.load("background.webp"), [0, 0])
 
-    menu_buttons(screen)
-
-
-
-
-
-
+    menu_screen(screen)
 
     # flip() the display to put your work on screen
     pygame.display.flip()
