@@ -16,11 +16,11 @@ class Board:
         self.width = width
         self.height = height
         self.screen = screen
-        if difficulty == 'easy':  #
+        if difficulty == 'Easy':  #
             self.og_board, self.sol_board = generate_sudoku(9, 30)  # gathers both solved board and user interative board
-        elif difficulty == 'medium':
+        elif difficulty == 'Medium':
             self.og_board, self.sol_board = generate_sudoku(9, 40)
-        elif difficulty == 'hard':
+        elif difficulty == 'Hard':
             self.og_board, self.sol_board = generate_sudoku(9, 50)
         self.cells = [[Cell(self.og_board[row][col], row, col, screen) for col in range(9)] for row in range(9)]
         self.selected = None
@@ -40,6 +40,8 @@ class Board:
                 thick = 7
             else:
                 thick = 1
+
+            #i'm sorry for the confusing stuff here, but it sets the screen to the center with a little bit at the top - Matt
             pygame.draw.line(self.screen, (0, 0, 0), (self.screen.get_width() / 2 - ((len(self.cells) / 2) * 40), i * 40 + (len(self.cells) / 3 * 40) - 40), (self.screen.get_width() / 2 + ((len(self.cells) / 2) * 40), i * 40 + (len(self.cells) / 3 * 40) - 40), thick)
             pygame.draw.line(self.screen, (0, 0, 0), (i * 40 + (len(self.cells) / 3 * 40), self.screen.get_width() / 2 - ((len(self.cells) / 2) * 40) - 40), (i * 40 + (len(self.cells) / 3 * 40), self.screen.get_width() / 2 + ((len(self.cells) / 2) * 40) - 40), thick)
 
