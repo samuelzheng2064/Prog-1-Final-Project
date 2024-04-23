@@ -19,7 +19,7 @@ class Cell:
     # function is assuming a screen of 360 x 420
     def draw(self):
 
-        x_pos, y_pos = 40 * self.col, 40 * self.row
+        x_pos, y_pos = 40 * self.col + 120, 40 * self.row + 80
 
         pygame.draw.rect(self.screen, (173, 216, 230), (x_pos, y_pos, 40, 40))
 

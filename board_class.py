@@ -1,5 +1,5 @@
 import pygame
-from cell_class import (Cell)
+from cell_class import Cell
 from SudokuGenerator_class import SudokuGenerator
 import copy
 
@@ -17,8 +17,8 @@ class Board:
         self.height = height
         self.screen = screen
         if difficulty == 'easy':  #
-            self.og_board, self.sol_board = generate_sudoku(9,
-                                                            30)  # gathers both solved board and user interative board    elif difficulty == 'medium':
+            self.og_board, self.sol_board = generate_sudoku(9, 30)  # gathers both solved board and user interative board
+        elif difficulty == 'medium':
             self.og_board, self.sol_board = generate_sudoku(9, 40)
         elif difficulty == 'hard':
             self.og_board, self.sol_board = generate_sudoku(9, 50)
@@ -40,8 +40,8 @@ class Board:
                 thick = 7
             else:
                 thick = 1
-            pygame.draw.line(self.screen, (0, 0, 0), (0, i * 40), (360, i * 40), thick)
-            pygame.draw.line(self.screen, (0, 0, 0), (i * 40, 0), (i * 40, 360), thick)
+            pygame.draw.line(self.screen, (0, 0, 0), (self.screen.get_width() / 2 - ((len(self.cells) / 2) * 40), i * 40 + (len(self.cells) / 3 * 40) - 40), (self.screen.get_width() / 2 + ((len(self.cells) / 2) * 40), i * 40 + (len(self.cells) / 3 * 40) - 40), thick)
+            pygame.draw.line(self.screen, (0, 0, 0), (i * 40 + (len(self.cells) / 3 * 40), self.screen.get_width() / 2 - ((len(self.cells) / 2) * 40) - 40), (i * 40 + (len(self.cells) / 3 * 40), self.screen.get_width() / 2 + ((len(self.cells) / 2) * 40) - 40), thick)
 
     # def draw_grid(self):
     #     # Draw the grid lines and boxes

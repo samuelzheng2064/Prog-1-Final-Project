@@ -1,7 +1,7 @@
 import sys
-
 import pygame
-#from board_class import Board
+from board_class import Board
+import SudokuGenerator_class
 
 def menu_screen(surface):
 
@@ -88,14 +88,24 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN and running:
                 if menu:
                     x, y = event.pos
-                    if 375 <= y <= 425:
+                    if 400 <= y <= 450:
                         if 50 <= x <= 190:
+                            screen.fill("white")
+                            screen.blit(pygame.image.load("background.webp"), [0, 0])
+                            current_board = Board(500, 500, screen, "easy")
+                            current_board.draw()
                             menu = False
                             board = True
                         elif 230 <= x <= 370:
+                            screen.fill("white")
+                            screen.blit(pygame.image.load("background.webp"), [0, 0])
+                            current_board = Board(450, 450, screen, "medium")
                             menu = False
                             board = True
                         elif 410 <= x <= 550:
+                            screen.fill("white")
+                            screen.blit(pygame.image.load("background.webp"), [0, 0])
+                            current_board = Board(450, 450, screen, "hard")
                             menu = False
                             board = True
                     if 475 <= y <= 525 and 230 <= x <= 370:
