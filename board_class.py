@@ -1,6 +1,7 @@
 import pygame
 from cell_class import (Cell)
 from SudokuGenerator_class import SudokuGenerator
+import copy
 
 def generate_sudoku(size, removed):
     sudoku = SudokuGenerator(size, removed)
