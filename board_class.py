@@ -16,14 +16,14 @@ class Board:
         self.width = width
         self.height = height
         self.screen = screen
-        if difficulty == 'Easy':  #
+        self.selected = False
+        if difficulty == 'Easy':
             self.og_board, self.sol_board = generate_sudoku(9, 30)  # gathers both solved board and user interative board
         elif difficulty == 'Medium':
             self.og_board, self.sol_board = generate_sudoku(9, 40)
         elif difficulty == 'Hard':
             self.og_board, self.sol_board = generate_sudoku(9, 50)
         self.cells = [[Cell(self.og_board[row][col], row, col, screen) for col in range(9)] for row in range(9)]
-        self.selected = None
 
     # def create_board(self):
     #     # Create a 2D list to represent the Sudoku board
@@ -41,30 +41,18 @@ class Board:
             else:
                 thick = 1
 
-            #i'm sorry for the confusing stuff here, but it sets the screen to the center with a little bit at the top - Matt
+            # i'm sorry for the confusing stuff here, but it sets the screen to the center with a little bit at the top - Matt
             pygame.draw.line(self.screen, (0, 0, 0), (self.screen.get_width() / 2 - ((len(self.cells) / 2) * 40), i * 40 + (len(self.cells) / 3 * 40) - 40), (self.screen.get_width() / 2 + ((len(self.cells) / 2) * 40), i * 40 + (len(self.cells) / 3 * 40) - 40), thick)
             pygame.draw.line(self.screen, (0, 0, 0), (i * 40 + (len(self.cells) / 3 * 40), self.screen.get_width() / 2 - ((len(self.cells) / 2) * 40) - 40), (i * 40 + (len(self.cells) / 3 * 40), self.screen.get_width() / 2 + ((len(self.cells) / 2) * 40) - 40), thick)
 
-    # def draw_grid(self):
-    #     # Draw the grid lines and boxes
-    #     for i in range(10):
-    #         if i % 3 == 0:
-    #             pygame.draw.line(self.screen, (0, 0, 0), (i * self.width // 10, 0),
-    #                              (i * self.width // 10, 9 * self.height // 10), 4)
-    #             pygame.draw.line(self.screen, (0, 0, 0), (0, i * self.height // 10),
-    #                              (9 * self.width // 10, i * self.height // 10), 4)
-    #         else:
-    #             pygame.draw.line(self.screen, (0, 0, 0), (i * self.width // 10, 0),
-    #                              (i * self.width // 10, 9 * self.height // 10))
-    #             pygame.draw.line(self.screen, (0, 0, 0), (0, i * self.height // 10),
-    #                              (9 * self.width // 10, i * self.height // 10))
-
     def select(self, row, col):
         # Select a cell on the board
+        self.cells[row][col].selected = True
+        self.selected = True
         self.selected_cell = (row, col)
 
     def click(self, x, y):
-        cell_size = self.width // 9
+        cell_size = self.width / 9 # dont need //
         if 0 <= x < self.width and 0 <= y < self.height:
             col = x // cell_size
             row = y // cell_size
@@ -81,28 +69,20 @@ class Board:
             else:
                 return False
 
-    def clear(self):  # clears input value
-        if self.selected:
-            row, col = self.selected
-            if self.og_board[row][col] == 0:
-                self.cells[row][col].set_cell_value(0)
-            else:
-                return False
-
     def sketch(self, value):  # sets and displays sketched value
         if self.selected:
-            row, col = self.selected
+            row, col = self.selected_cell
             if self.og_board[row][col] == 0:
                 self.cells[row][col].set_sketched_value(value)
 
-    def place_number(self, value):  # sets number
+    def place_number(self, value=0):  # sets number
         if self.selected:
-            row, col = self.selected
+            row, col = self.selected_cell
             if self.og_board[row][col] == 0:
+                value = self.cells[row][col].sketched_value
                 self.cells[row][col].set_cell_value(value)
 
-    def reset_to_original(self):  # resets to original boardd
-        if self.og_board:
+    def reset_to_original(self):  # resets to original board
             for i in range(9):
                 for j in range(9):
                     self.cells[i][j].set_cell_value(self.og_board[i][j])
@@ -154,34 +134,4 @@ class Board:
                 if self.cells[row + row_start][col + col_start].value == num:
                     return True
         return False
-
-    # def sketch(self, value):
-    #     # Sketch a value in the selected cell
-    #     if self.selected_cell is not None:
-    #         self.board[self.selected_cell[0]][self.selected_cell[1]].sketch(value)
-    #         self.sketched_value = value
-    #
-    # def place_number(self, value):
-    #     # Place a number in the selected cell
-    #     if self.selected_cell is not None:
-    #         self.board[self.selected_cell[0]][self.selected_cell[1]].place_number(value)
-    #         self.sketched_value = None
-    #
-    # def reset_to_original(self):
-    #     # Reset all cells to their original values
-    #     for row in range(9):
-    #         for col in range(9):
-    #             self.board[row][col].reset_to_original()
-    #
-    # def is_full(self):
-    #     # Check if all cells have a value
-    #     for row in range(9):
-    #         for col in range(9):
-    #             if self.board[row][col].value == 0:
-    #                 return False
-    #     return True
-    #
-    # def update_board(self):
-    #     # Update the underlying 2D board with the values in all cells
-    #     self.board = [[self.board[row][col].value for col in range(9)] for row in range(9)]
 

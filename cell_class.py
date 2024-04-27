@@ -9,6 +9,7 @@ class Cell:
         self.col = col
         self.screen = screen
         self.sketched_value = 0
+        self.selected = False
 
     def set_cell_value(self, value):
         self.value = int(value)  # uses integer to compare
@@ -33,3 +34,5 @@ class Cell:
             text_surface = pygame.font.Font(None, 15).render(str(self.sketched_value), True, (128, 128, 128))
             text_rect = text_surface.get_rect(center=(x_pos + 10, y_pos + 10))
             self.screen.blit(text_surface, text_rect)
+        if self.selected:
+            pygame.draw.rect(self.screen, (200, 0, 0), (x_pos, y_pos, 40, 40), width=5 )
