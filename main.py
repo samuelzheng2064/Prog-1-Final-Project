@@ -195,7 +195,6 @@ def main():
             screen.blit(difficulty_text,(screen.get_width() / 2 - difficulty_text.get_rect().width / 2, screen.get_height() / 30))
             # stop drawing the board again
             board = False
-            print(current_board.sol_board)
 
         for event in pygame.event.get():
 
