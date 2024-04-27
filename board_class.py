@@ -12,6 +12,7 @@ def generate_sudoku(size, removed):
     return board, sol_board
 
 class Board:
+    CELL_SIZE = 40
     def __init__(self, width, height, screen, difficulty):
         self.width = width
         self.height = height
@@ -23,7 +24,12 @@ class Board:
             self.og_board, self.sol_board = generate_sudoku(9, 40)
         elif difficulty == 'Hard':
             self.og_board, self.sol_board = generate_sudoku(9, 50)
-        self.cells = [[Cell(self.og_board[row][col], row, col, screen) for col in range(9)] for row in range(9)]
+        self.cells = [[Cell(self.og_board[row][col], row, col, screen, self.CELL_SIZE) for col in range(9)] for row in range(9)]
+
+        self.left_of_board = self.screen.get_width() / 2 - ((len(self.cells) / 2) * self.CELL_SIZE)
+        self.right_of_board = self.screen.get_width() / 2 + ((len(self.cells) / 2) * self.CELL_SIZE)
+        self.top_of_board = self.screen.get_width() / 2 - ((len(self.cells) / 2) * self.CELL_SIZE) - self.CELL_SIZE
+        self.bottom_of_board = self.screen.get_width() / 2 + ((len(self.cells) / 2) * self.CELL_SIZE) - self.CELL_SIZE
 
     # def create_board(self):
     #     # Create a 2D list to represent the Sudoku board
@@ -47,15 +53,12 @@ class Board:
 
     def select(self, row, col):
         # Select a cell on the board
-        self.cells[row][col].selected = True
-        self.selected = True
-        self.selected_cell = (row, col)
+        self.selected = (row, col)
 
     def click(self, x, y):
-        cell_size = self.width / 9 # dont need //
-        if 0 <= x < self.width and 0 <= y < self.height:
-            col = x // cell_size
-            row = y // cell_size
+        if self.left_of_board <= x < self.right_of_board and self.top_of_board <= y < self.bottom_of_board:
+            col = x // self.CELL_SIZE - 2
+            row = y // self.CELL_SIZE - 1
             return row, col
         else:
             return None
@@ -71,13 +74,17 @@ class Board:
 
     def sketch(self, value):  # sets and displays sketched value
         if self.selected:
-            row, col = self.selected_cell
+            row, col = self.selected
+            row -= 1
+            col -= 1
             if self.og_board[row][col] == 0:
                 self.cells[row][col].set_sketched_value(value)
 
     def place_number(self, value=0):  # sets number
         if self.selected:
-            row, col = self.selected_cell
+            row, col = self.selected
+            row -= 1
+            col -= 1
             if self.og_board[row][col] == 0:
                 value = self.cells[row][col].sketched_value
                 self.cells[row][col].set_cell_value(value)
@@ -85,6 +92,7 @@ class Board:
     def reset_to_original(self):  # resets to original board
             for i in range(9):
                 for j in range(9):
+                    self.cells[i][j].set_sketched_value(0)
                     self.cells[i][j].set_cell_value(self.og_board[i][j])
 
     def is_full(self):  # finds if board is full
@@ -107,10 +115,11 @@ class Board:
         return None
 
     def check_board(self):  # checks solved board against user input
-        if self.sol_board != self.og_board:  # checks solved board against original board
-            return False
-        else:
-            return True
+        for row in range(9):
+            for col in range(9):
+                if self.sol_board[row][col] != self.cells[row][col].value:
+                    return False
+        return True
 
     def check_valid(self, row, col, num):  # checks valid number
         return self.valid_row(row, num) and self.valid_col(col, num) and self.valid_box(row - row % 3, col - col % 3,

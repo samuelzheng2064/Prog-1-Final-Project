@@ -3,11 +3,12 @@ import pygame
 
 class Cell:
     # constructor
-    def __init__(self, value, row, col, screen):
+    def __init__(self, value, row, col, screen, size):
         self.value = value
         self.row = row
         self.col = col
         self.screen = screen
+        self.size = size
         self.sketched_value = 0
         self.selected = False
 
@@ -20,9 +21,9 @@ class Cell:
     # function is assuming a screen of 360 x 420
     def draw(self):
 
-        x_pos, y_pos = 40 * self.col + 120, 40 * self.row + 80
+        x_pos, y_pos = self.size * self.col + 120, self.size * self.row + 80
 
-        pygame.draw.rect(self.screen, (173, 216, 230), (x_pos, y_pos, 40, 40))
+        pygame.draw.rect(self.screen, (173, 216, 230), (x_pos, y_pos, self.size, self.size))
 
         # draws number in rectangle
         if self.value != 0:

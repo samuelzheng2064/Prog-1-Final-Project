@@ -2,6 +2,74 @@ import sys
 import pygame
 from board_class import Board
 
+def draw_highlight(current_board, selected_cell, screen):
+    row, col = selected_cell
+    cell_highlight = pygame.Rect((col + 2) * current_board.CELL_SIZE, (row + 1) * current_board.CELL_SIZE,
+                                 current_board.CELL_SIZE, current_board.CELL_SIZE)
+    current_board.draw()
+    pygame.draw.rect(screen, "red", cell_highlight, 5)
+
+def win_screen(screen):
+    #font for buttons
+    default_font = pygame.font.Font(None, 40)
+
+    #Sets background
+    screen.fill("white")
+    screen.blit(pygame.image.load("background.webp"), [0, 0])
+
+    #win text
+    win_font = pygame.font.Font("minecraft-font/MinecraftRegular-Bmg3.otf", 80)
+    win_text = win_font.render("You Win!!! :)", 0, "black")
+
+    #win background
+    win_rect = pygame.Rect.copy(win_text.get_rect())
+    win_rect.width += 20
+    win_rect.height += 20
+    win_rect.top = screen.get_height() / 2 - win_text.get_rect().height / 2 - 10
+    win_rect.left = screen.get_width() / 2 - win_text.get_rect().width / 2 - 10
+
+    #prints win text
+    pygame.draw.rect(screen, "white", win_rect)
+    pygame.draw.rect(screen, "black", win_rect, 5)
+    screen.blit(win_text, (screen.get_width() / 2 - win_text.get_rect().width / 2, screen.get_height() / 2 - win_text.get_rect().height / 2))
+
+    #exit button
+    exit_button = pygame.Rect(230, 475, 140, 50)
+    pygame.draw.rect(screen, "white", exit_button, 0, int(exit_button.height / 2))
+    pygame.draw.rect(screen, "black", exit_button, 1, int(exit_button.height / 2))
+    exit_text = default_font.render("EXIT", 0, "black")
+    screen.blit(exit_text, (268, 488))
+
+def lose_screen(screen):
+    #font for buttons
+    default_font = pygame.font.Font(None, 40)
+
+    #Sets background
+    screen.fill("white")
+    screen.blit(pygame.image.load("background.webp"), [0, 0])
+
+    #lose text
+    lose_font = pygame.font.Font("minecraft-font/MinecraftRegular-Bmg3.otf", 80)
+    lose_text = lose_font.render("You Lose :(", 0, "black")
+
+    #lose background
+    lose_rect = pygame.Rect.copy(lose_text.get_rect())
+    lose_rect.width += 20
+    lose_rect.height += 20
+    lose_rect.top = screen.get_height() / 2 - lose_text.get_rect().height / 2 - 10
+    lose_rect.left = screen.get_width() / 2 - lose_text.get_rect().width / 2 - 10
+
+    #prints lose text and background
+    pygame.draw.rect(screen, "white", lose_rect)
+    pygame.draw.rect(screen, "black", lose_rect, 5)
+    screen.blit(lose_text, (screen.get_width() / 2 - lose_text.get_rect().width / 2, screen.get_height() / 2 - lose_text.get_rect().height / 2))
+
+    #restart button
+    restart_button = pygame.Rect(230, 475, 140, 50)
+    pygame.draw.rect(screen, "white", restart_button, 0, int(restart_button.height / 2))
+    pygame.draw.rect(screen, "black", restart_button, 1, int(restart_button.height / 2))
+    restart_text = default_font.render("RESTART", 0, "black")
+    screen.blit(restart_text, (237, 488))
 
 def main():
     # setup for pygame and screen
@@ -127,6 +195,7 @@ def main():
             screen.blit(difficulty_text,(screen.get_width() / 2 - difficulty_text.get_rect().width / 2, screen.get_height() / 30))
             # stop drawing the board again
             board = False
+            print(current_board.sol_board)
 
         for event in pygame.event.get():
 
@@ -154,72 +223,72 @@ def main():
                     if exit_button.collidepoint(event.pos):
                         running = False
                 elif endwin:
-                    if exit_button.collidepoint(event.pos):
-                        running = False
+                    if 475 < y < 525 and 230 <= x <= 370:
+                        pygame.quit()
+                        sys.exit()
                 elif endlose:
                     if restart_button.collidepoint(event.pos):
                         menu = True
+                        endlose = False
                 elif not menu:
                     if reset_button.collidepoint(event.pos):
                         current_board.reset_to_original()
+                        current_board.draw()
                     elif restart_button.collidepoint(event.pos):
                         menu = True
                     elif exit_button.collidepoint(event.pos):
                         running = False
                     elif current_board.click(x,y):
-                        current_board.cells[row][col].selected = False
                         row, col = current_board.click(x,y)
                         row, col = int(row), int(col)
-                        print(row, col) # the position is a little bit off need to fix
                         current_board.select(row, col)
-                        current_board.draw()
+                        draw_highlight(current_board, current_board.selected, screen)
 
                 pygame.display.flip()
 
-            if event.type == pygame.KEYDOWN and current_board.cells[row][col].selected:
+            if event.type == pygame.KEYDOWN and current_board and current_board.selected and running:
                 if current_board.selected:
                     if event.key in [pygame.K_LEFT, pygame.K_a, pygame.K_RIGHT, pygame.K_d, pygame.K_UP, pygame.K_w, pygame.K_DOWN, pygame.K_s]:
-                        current_board.cells[row][col].selected = False
+                        if event.key == pygame.K_UP or event.key == pygame.K_w:
+                            if current_board.selected[0] > 1:
+                                row, col = current_board.selected
+                                current_board.select(row - 1, col)
+                                draw_highlight(current_board, current_board.selected, screen)
+                        if event.key == pygame.K_DOWN or event.key == pygame.K_s:
+                            if current_board.selected[0] < 9:
+                                row, col = current_board.selected
+                                current_board.select(row + 1, col)
+                                draw_highlight(current_board, current_board.selected, screen)
                         if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                            if col != 0:
-                                col = col - 1
-                        elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                            if col != 8:
-                                col = col + 1
-                        elif event.key == pygame.K_UP or event.key == pygame.K_w:
-                            if row != 0:
-                                row = row - 1
-                        elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
-                            if row != 8:
-                                row = row + 1
-                        current_board.select(row, col)
-                        current_board.draw()
+                            if current_board.selected[1] > 1:
+                                row, col = current_board.selected
+                                current_board.select(row, col - 1)
+                                draw_highlight(current_board, current_board.selected, screen)
+                        if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+                            if current_board.selected[1] < 9:
+                                row, col = current_board.selected
+                                current_board.select(row, col + 1)
+                                draw_highlight(current_board, current_board.selected, screen)
+
                     elif event.key in [pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9]:
                         current_board.sketch(event.unicode)
+                        draw_highlight(current_board, current_board.selected, screen)
                     elif event.key == pygame.K_BACKSPACE:
                         current_board.sketch(0)
                         current_board.place_number()
+                        draw_highlight(current_board, current_board.selected, screen)
                     elif event.key == pygame.K_RETURN:
                         current_board.place_number()
                         current_board.sketch(0)
+                        draw_highlight(current_board, current_board.selected, screen)
                         if current_board.is_full():
                             screen.fill("white")
                             screen.blit(pygame.image.load("background.webp"), [0, 0])
                             if current_board.check_board():
-                                win_text = font.render("Game Won!", 0, "black")
-                                screen.blit(win_text, (300, 200))
-                                exit_button = pygame.Rect((0, 0, 140, 50))
-                                exit_button.center = (300, 400)
-                                pygame.draw.rect(screen, "white", exit_button, 0, int(exit_button.height / 2))
-                                pygame.draw.rect(screen, "black", exit_button, 1, int(exit_button.height / 2))
+                                win_screen(screen)
                                 endwin = True
                             else:
-                                lose_text = font.render("Game Over :(", 0, "black")
-                                screen.blit(lose_text, (300, 200))
-                                restart_button = pygame.Rect((0, 0, 140, 50))
-                                restart_button.center = (300, 400)
-                                pygame.draw.rect(screen, "white", restart_button, 0, int(restart_button.height / 2))
-                                pygame.draw.rect(screen, "black", restart_button, 1, int(restart_button.height / 2))
+                                lose_screen(screen)
                                 endlose = True
 
         pygame.display.flip()
