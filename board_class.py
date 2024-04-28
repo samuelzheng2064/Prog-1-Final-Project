@@ -1,6 +1,6 @@
 import pygame
 from cell_class import Cell
-from SudokuGenerator_class import SudokuGenerator
+from sudoku_generator import SudokuGenerator
 import copy
 
 def generate_sudoku(size, removed):
